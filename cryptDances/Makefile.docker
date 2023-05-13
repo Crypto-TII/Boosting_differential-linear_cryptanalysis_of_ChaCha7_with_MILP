@@ -1,0 +1,39 @@
+#how to run:
+#mpirun -np 17 -hostfile hosts ./papers_computational_results 
+
+CC=/usr/local/cuda-11.3/bin/nvcc
+ARCH=-c -O3 -arch sm_75 -std=c++17
+MPIINC=-I/usr/local/ompi/include -I/usr/local/ompi/include/openmpi
+INCLUDE=$(MPIINC) -I./include -I./include/algorithms
+MPILIB=/usr/local/ompi/lib
+BASE=src/algorithms/*.cu  src/kernels/*.cu src/util.cu src/cryptanalysis_types.cu src/automatic_linear_expansions.cu src/crypt_dances_explorer.cu
+OBJECTS = *.o
+
+FLAGS=-lmpi -lopen-rte -lopen-pal -lnsl -lutil -lm
+
+#.PHONY: all crypt_dances_explorer
+
+#all: crypt_dances_explorer # crypt_dances_tests crypt_dances_papers
+
+#all: crypt_dances_explorer1
+
+
+#crypt_dances_explorer1: $(BASE)
+#       $(CC) $(ARCH) $(INCLUDE) -lm -L$(MPILIB) $(FLAGS) -rdc=true $(BASE)
+#       touch $@
+
+
+all: crypt_dances_explorer
+
+crypt_dances_explorer : $(BASE)
+	$(CC) -O3 -arch sm_75 -std=c++17 $(INCLUDE) -lm -L$(MPILIB) $(FLAGS) -rdc=true $^ -o $@
+
+
+%.o: %.cu
+	$(CC) $(ARCH) $(INCLUDE) -lm -L$(MPILIB) $(FLAGS) -rdc=true $<
+
+
+
+#.PHONY : clean
+#clean :
+#       -rm -f crypt_dances_explorer crypt_dances_papers crypt_dances_tests *.o *.o
