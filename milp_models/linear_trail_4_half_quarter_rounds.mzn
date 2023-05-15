@@ -1,5 +1,5 @@
 include "linear_model_chacha.mzn";
-include "linear_trail_4_and_7.mzn";
+include "linear_trail_4_and_7_proof.mzn";
 int: word_size=32;
 int: R=9;
 array [0..R, 0..3, 0..3, 0..(n-1)]  of var 0..1 : STATE;
